@@ -1,0 +1,13 @@
+
+{
+	"Name" : "PeoplePoll Demo",
+	"ProblemLimit" : 6,
+	"CandidateLimit" : 4,
+	"ProblemCount" : 0,
+	"Problems" : 
+			[
+		"Illegal Immigration",
+		"Tax Reform",
+		"Unemployement"
+			]
+}
