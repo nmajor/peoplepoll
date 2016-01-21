@@ -10,12 +10,12 @@ var focus_politician;
 var	focus_page = 0;
 var focus_preference;
 var	solution_string = "";
-var	page_one_first = "<p>Click here to start with the first issue</p>";
-var	page_one_more = "<p>Click here to move onto the next issue</p>";
-var	page_one_done = "<p>There are no more issues. You can click on each condidate to see how they ranked and priorities the issues</p>";
-var	page_two = "<p>Click on the issue to see the candidate's solutions. Click on the emojis to change the priority of an issue then click here to see results</p>";
-var	page_three = "<p>Click on each proposal to read it's explanation. Click on emojis multiple times to set your preference to a solution then click here to return </p>";
-var	page_four = "<p>After reading this proposal, click here to go back and set your preferrence </p>";
+var	page_one_first = {text: "", button: "Start"};
+var	page_one_more = {text: "", button: "Next Issue"};
+var	page_one_done = {text: "There are no more issues. You can click on each condidate to see how they ranked and priorities the issues", button: ""};
+var	page_two = {text: "Click on the issue to see the candidate's solutions. Use the arrows to change your prioritization of the issue.", button: "Results"};
+var	page_three = {text: "Click on each proposal to read it's explanation. Use the arrows to set your preference for a solution", button: "Return"};
+var	page_four = {text: "", button: "Back"};
 var colorarray = ["gainsboro", "orangered", "darkorange" , "coral", "coral", "white", "yellow",  "yellow", "yellowgreen", "limegreen"];
 
 $(document).ready(function(){
@@ -59,15 +59,15 @@ $(document).ready(function(){
 		var row = 0;
 		var col = 0;
 
-		$(".table_cell").each(function( index ){
+		$(".table_cell").each(function( index, elm ){
 			row = parseInt((loop / 3).toString());
 			col = loop % 3;
 			if (col == 0) {
 				if ((row < poll.ProblemCount) && (focus_page == 1)) {
 //					$(this).html("<span class=emoji>&#x1F44D;</span>");
-					$(this).html("<span class=emoji>&#x2b06;</span>");
+					$(this).html("<span class='emoji clickable'>&#x2b06;</span>");
 				} else if ((row < candidate_count) && (focus_page == 2)) {
-					$(this).html("<span class=emoji>&#x1F44D;</span>");
+					$(this).html("<span class='emoji clickable'>&#x1F44D;</span>");
 				} else {
 					$(this).text(" ");
 				}
@@ -92,7 +92,17 @@ $(document).ready(function(){
 					$(this).text(solution_string);
 					$(".page_type").text("Proposals and Solutions");
 					$( this ).css("font-weight", "normal");
-					$(this).css("background-color", colorarray[focus_preference]);
+					// $(this).css("background-color", colorarray[focus_preference]);
+
+          console.log('blahyo '+focus_preference);
+          if (focus_preference > 5) {
+            $(elm).removeClass('danger');
+            $(elm).addClass('success');
+          } else if (focus_preference < 5 && focus_preference != 0) {
+            $(elm).removeClass('success');
+            $(elm).addClass('danger');
+          }
+
 				} else if ((row == 0) && (focus_page == 3)) {
 					$(this).html(candidates[focus_politician].Summaries[focus_problem]);
 					$(".page_type").text(candidates[focus_politician].Titles[focus_problem]);
@@ -106,18 +116,20 @@ $(document).ready(function(){
 				} else {
 					$(this).text(" ");
 				}
-				if ((row < candidate_count) && (focus_page == 1)) {
-					$(this).css("background-color", "#E0E0d1");
-				}
-				if ((row < candidate_count) && (focus_page == 3)) {
-					$(this).css("background-color", "#E0E0d1");
-				}
+				// if ((row < candidate_count) && (focus_page == 1)) {
+        //   console.log('ho');
+				// 	$(this).css("background-color", "#E0E0d1");
+				// }
+				// if ((row < candidate_count) && (focus_page == 3)) {
+        //   console.log('hey');
+				// 	$(this).css("background-color", "#E0E0d1");
+				// }
 			}
 			if (col == 2) {
 				if ((row < poll.ProblemCount) && (focus_page == 1)) {
-					$(this).html("<span class=emoji>&#x2b07;</span>");
+					$(this).html("<span class='emoji clickable'>&#x2b07;</span>");
 				} else if ((row < candidate_count) && (focus_page == 2)) {
-					$(this).html("<span class=emoji>&#x1F44E;</span>");
+					$(this).html("<span class='emoji clickable'>&#x1F44E;</span>");
 				} else {
 					$(this).text(" ");
 				}
@@ -129,21 +141,28 @@ $(document).ready(function(){
     $.fn.updatepage();
     $.fn.updateaction = function(){
 		if (focus_page == 0) {
-			if (poll.ProblemCount == 0)
-				$(".actiondiv").html(page_one_first);
-			else if (poll.ProblemCount < poll.Problems.length)
-				$(".actiondiv").html(page_one_more);
-			else
-				$(".actiondiv").html(page_one_done);
+			if (poll.ProblemCount == 0) {
+        $(".actiontext").html(page_one_first.text);
+				$(".actiondiv").html(page_one_first.button);
+			} else if (poll.ProblemCount < poll.Problems.length) {
+        $(".actiontext").html(page_one_more.text);
+				$(".actiondiv").html(page_one_more.button);
+			} else {
+        $(".actiontext").html(page_one_done.text);
+				$(".actiondiv").html(page_one_done.button);
+      }
 		}
 		if (focus_page == 1) {
-			$(".actiondiv").html(page_two);
+      $(".actiontext").html(page_two.text);
+			$(".actiondiv").html(page_two.button);
 		}
 		if (focus_page == 2) {
-			$(".actiondiv").html(page_three);
+      $(".actiontext").html(page_three.text);
+			$(".actiondiv").html(page_three.button);
 		}
 		if (focus_page == 3) {
-			$(".actiondiv").html(page_four);
+      $(".actiontext").html(page_four.text);
+			$(".actiondiv").html(page_four.button);
 		}
 //		$('.acctiondiv').css({left:'50%',margin:'-'+($('.acctiondiv').height() / 2)+'px 0 0 -'+($('.acctiondiv').width() / 2)+'px'});
 //		$(".completion").text(poll.Completed.toString() + " of " + race.total.toString());
@@ -199,7 +218,7 @@ $(document).ready(function(){
 		var	loop = 0;
 		var row = 0;
 		var col = 0;
-		$(".table_cell").each(function( index ){
+		$(".table_cell").each(function( index, elm ){
 			row = parseInt((loop / 3).toString());
 			col = loop % 3;
 			if (this == thisobject){
@@ -259,43 +278,43 @@ $(document).ready(function(){
 	});
 
 
-	$("td").mouseover(function(){
-		var thisobject = this;
-		var	loop = 0;
-		var row = 0;
-		var col = 0;
-		if (focus_page == 3) {
-			return;
-		}
-		$(".table_cell").each(function( index ){
-			row = parseInt((loop / 3).toString());
-			col = loop % 3;
-			if ((row == focus_row) && (col == focus_col) && (col == 1)) {
-				$( this ).css("font-weight", "normal");
-			}
-			loop ++;
-		});
-		loop = 0;
-		$(".table_cell").each(function( index ){
-			row = parseInt((loop / 3).toString());
-			col = loop % 3;
-			if (this == thisobject) {
-				focus_row = row;
-				focus_col = 1;
-				loop = 0;
-				$(".table_cell").each(function( index ){
-					row = parseInt((loop / 3).toString());
-					col = loop % 3;
-					if ((row == focus_row) && (col == focus_col)) {
-						$( this ).css("font-weight", "bold");
-						return false;
-					}
-					loop ++;
-				});
-			}
-			loop ++;
-		});
-	});
+	// $("td").mouseover(function(){
+	// 	var thisobject = this;
+	// 	var	loop = 0;
+	// 	var row = 0;
+	// 	var col = 0;
+	// 	if (focus_page == 3) {
+	// 		return;
+	// 	}
+	// 	$(".table_cell").each(function( index ){
+	// 		row = parseInt((loop / 3).toString());
+	// 		col = loop % 3;
+	// 		if ((row == focus_row) && (col == focus_col) && (col == 1)) {
+	// 			$( this ).css("font-weight", "normal");
+	// 		}
+	// 		loop ++;
+	// 	});
+	// 	loop = 0;
+	// 	$(".table_cell").each(function( index ){
+	// 		row = parseInt((loop / 3).toString());
+	// 		col = loop % 3;
+	// 		if (this == thisobject) {
+	// 			focus_row = row;
+	// 			focus_col = 1;
+	// 			loop = 0;
+	// 			$(".table_cell").each(function( index ){
+	// 				row = parseInt((loop / 3).toString());
+	// 				col = loop % 3;
+	// 				if ((row == focus_row) && (col == focus_col)) {
+	// 					$( this ).css("font-weight", "bold");
+	// 					return false;
+	// 				}
+	// 				loop ++;
+	// 			});
+	// 		}
+	// 		loop ++;
+	// 	});
+	// });
 
 
 });
